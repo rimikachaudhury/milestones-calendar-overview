@@ -10,5 +10,19 @@
     <div id="app">
     </div>
     <script type="module" src="/src/main.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/faunadb@latest/dist/faunadb.js"></script>
+    <script type="text/javascript">
+      var faunadb = window.faunadb
+      var q = faunadb.query
+      var client = new faunadb.Client({
+        secret: 'fnAFLgiyHqAARM3hOMlaMuvqhwwlaMIOVcKU66Os',
+        endpoint: 'https://db.us.fauna.com:443'
+      })
+      client.query(q.ToDate('2018-06-06')) // => 2018-06-06T00:00:00Z
+      .then((ret) => console.log(ret))
+      .catch((err) => console.error('Error: %s', err))
+
+    </script>
+
   </body>
 </html>
