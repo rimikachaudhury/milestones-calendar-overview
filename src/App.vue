@@ -191,8 +191,7 @@ const events = loadedEvents;
       :events="events"
       editable-events="editable-events">
       <template #title="{ title }"> {{ title }} </template>
-      
-    </vue-cal>
+      </vue-cal>
 
    </main>
 </template>
