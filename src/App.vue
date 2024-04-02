@@ -1,5 +1,7 @@
 
 <script setup>
+import { fetchDataFromDB } from './faunaService';
+import { processLoadedData } from './dataProcessor';
 // Documentation: https://antoniandre.github.io/vue-cal
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
@@ -7,7 +9,7 @@ import { ref } from 'vue';
 import { defineAsyncComponent, onMounted, reactive } from 'vue'
 
 
-const loadedData = ref(["dummy data"]);
+const loadedData = ref(["dummy data"]);//iniliaze as an array with dummy string
 const loadedEvents = reactive([]);
 // reminder: use loadedData.value to access the value inside script setup
 // in the template, loadedData is accessible or unwrapped directly: {{loadedData}}
@@ -16,19 +18,34 @@ const loadedEvents = reactive([]);
 //const AsyncVueCal = defineAsyncComponent(() => import('./VueCal.vue'))
 console.log("code from App.vue");
 
-// test_usersDB database secret key: fnAFLgiyHqAARM3hOMlaMuvqhwwlaMIOVcKU66Os
-try{
-    var faunaClient = new faunadb.Client({
-        secret: "fnAFLgiyHqAARM3hOMlaMuvqhwwlaMIOVcKU66Os", // need safer way to handle this
-    }); 
-      
-    console.log("connected to database server successfully");
-    var q = faunadb.query  
-
-
-}catch(e){
-    console.log("could not connect to database!:", e)
+function loadDataAndPopulateEvents() {
+    fetchDataFromDB()
+        .then(dataObject => {
+          console.log("Fetched data 'dataObject' is: ", dataObject);
+            const processedData = processLoadedData(dataObject.data);
+            console.log("processed data array is ",processedData);
+            loadedEvents.push(...processedData);
+            console.log("loadedEvents array is ",loadedEvents);
+        })
+        .catch(error => console.error("Failed to load data:", error));
 }
+
+onMounted(()=>{loadDataAndPopulateEvents()});
+
+
+// test_usersDB database secret key: fnAFLgiyHqAARM3hOMlaMuvqhwwlaMIOVcKU66Os
+// try{
+//     var faunaClient = new faunadb.Client({
+//         secret: "fnAFLgiyHqAARM3hOMlaMuvqhwwlaMIOVcKU66Os", // need safer way to handle this
+//     }); 
+      
+//     console.log("connected to database server successfully");
+//     var q = faunadb.query  
+
+
+// }catch(e){
+//     console.log("could not connect to database!:", e)
+// }
 
 //access collection in database
 
@@ -39,65 +56,66 @@ var refID = ref(0);
 //or by using return statement in then block
 //async function starts here
 
-//async function loadData() {
-  const loadData = async () => {
-  try{
+//load data from database
+//   const loadData = async () => {
+//   try{
 
-    //check which collection to query based on the current user
-    const queriedData = await faunaClient.query(q.Map(q.Paginate(q.Documents(q.Collection('pilot0'))), q.Lambda(x => q.Get(x)) ))
-                    .then((ret) => {
-                        //allDocuments = ret;
-                        refID=ret.data[0].ref.id;
-                        console.log("First data item in the array <data> in the returned object <ret> from the specific collection <pilot>", ret.data[0].data.siteInfo);
-                        console.log("returned document ID is ",ret.data[0].ref.id, "and the refID declared outside, and defined inside the scope is ", refID);
-                        console.log("length of returned document is ",ret.data.length);
-                        return ret;
-                      })
-                      .catch((err) => {
-                        console.log("error in querying collection from database", err);
-                        });
-//await ends here
-console.log("length of queriedData is ",queriedData.data.length);
-                        return queriedData; 
-//try ends here
-  }catch(e){console.log("could not get collection from database!:", e)}
+//     //check which collection to query based on the current user
+//     const queriedData = await faunaClient.query(q.Map(q.Paginate(q.Documents(q.Collection('pilot0'))), q.Lambda(x => q.Get(x)) ))
+//                     .then((ret) => {
+//                         //allDocuments = ret;
+//                         refID=ret.data[0].ref.id;
+//                         console.log("First data item in the array <data> in the returned object <ret> from the specific collection <pilot>", ret.data[0].data.siteInfo);
+//                         console.log("returned document ID is ",ret.data[0].ref.id, "and the refID declared outside, and defined inside the scope is ", refID);
+//                         console.log("length of returned document is ",ret.data.length);
+//                         return ret;
+//                       })
+//                       .catch((err) => {
+//                         console.log("error in querying collection from database", err);
+//                         });
+// //await ends here
+// console.log("length of queriedData is ",queriedData.data.length);
+//                         return queriedData; 
+// //try ends here
+//   }catch(e){console.log("could not get collection from database!:", e)}
    
-//refID=returnedData.data[0].ref.id;
-}//end of async loadData function
+// //refID=returnedData.data[0].ref.id;
+// }//end of async loadData function
 
 //call loadData function when component is mounted + todo: and again when data is updated
 //when is onMounted called?
-onMounted(()=>{
-   console.log("====> Loaded data outside async function, in onMounted is: ",
-   loadData().then((dataObject)=>{    
-    loadedData.value = dataObject.data[0].data.siteInfo;
-    console.log("Accessing data from OnMounted", loadedData.value);
-    const dataArray = dataObject.data;
-//handle the data tranformations here
 
-//loop through each source object in the array and convert it into event object
-//looping begins here
-    for(const dataItem of dataArray){
+// onMounted(()=>{
+//    console.log("====> Loaded data from loadData() async function being onMounted is: ",
+//    loadData().then((dataObject)=>{    
+//     loadedData.value = dataObject.data[0].data.siteInfo;
+//     console.log("Accessing data from OnMounted", loadedData.value);
+//     const dataArray = dataObject.data;
+// //handle the data tranformations here
 
-      const dateAdded = new Date(dataItem.data.siteInfo.dateAdded)
+// //loop through each source object in the array and convert it into event object
+// //looping begins here
+//     for(const dataItem of dataArray){
 
-      //calculate default endtime - 1hr (60*60*1000 milliseconds) from start time
-      const end = new Date(dateAdded.getTime() + 60*60*1000);
+//       const dateAdded = new Date(dataItem.data.siteInfo.dateAdded)
 
-      //define event object
-      const eventItem = {
-        start: new Date(dataItem.data.siteInfo.dateAdded),
-        end: new Date(dateAdded.getTime() + 60*60*1000),
-        title: dataItem.data.siteInfo.title,
-        content: dataItem.data.siteInfo.url
-      }
-      loadedEvents.push(eventItem);
+//       //calculate default endtime - 1hr (60*60*1000 milliseconds) from start time
+//       const end = new Date(dateAdded.getTime() + 60*60*1000);
+
+//       //define event object
+//       const eventItem = {
+//         start: new Date(dataItem.data.siteInfo.dateAdded),
+//         end: new Date(dateAdded.getTime() + 60*60*1000),
+//         title: dataItem.data.siteInfo.title,
+//         content: dataItem.data.siteInfo.url
+//       }
+//       loadedEvents.push(eventItem);
       
-    }// end of for loop for each dataItem in dataArray
-    console.log("loadedEvents array is ",loadedEvents);
+//     }// end of for loop for each dataItem in dataArray
+//     console.log("loadedEvents array is ",loadedEvents);
   
-  }));
-})
+//   }));
+// })
 
 //note1: the first console.log is printed before the promise is resolved
 //note2: the inner console.log prints again, when promise does resolve and data is accessible
@@ -183,9 +201,9 @@ const events = loadedEvents;
   <main>
     <!-- wrapping one child node in suspense component -->
       
-    <div> {{ loadedEvents }} </div>
+    <!-- <div> {{ loadedEvents }} </div> -->
     <vue-cal class="vuecal--blue-theme"
-      selected-date= "2023-09-15"
+      selected-date= "2024-04-01"
       :time="true"
       :time-from="4 * 60"
       :events="events"
