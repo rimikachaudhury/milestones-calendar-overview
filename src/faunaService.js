@@ -4,9 +4,9 @@ const faunaClient = new faunadb.Client({
     secret: "fnAFLgiyHqAARM3hOMlaMuvqhwwlaMIOVcKU66Os",
 });
 
-export async function fetchDataFromDB() {
+export async function fetchDataFromDB(collectionName) {
     try {
-        console.log("Querying collection pilot1...")
+        console.log("App Vue: Querying collection :",collectionName)
         return await faunaClient.query(
             q.Map(
                 q.Paginate(q.Documents(q.Collection('pilot1'))),
