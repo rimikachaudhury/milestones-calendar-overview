@@ -7,189 +7,105 @@ import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import { ref } from 'vue';
 import { defineAsyncComponent, onMounted, reactive } from 'vue'
-
+import { updateEventColor } from './UpdateEventColor.js';
+import {categorizeData} from './categorizeData.js';
 
 const loadedData = ref(["dummy data"]);//iniliaze as an array with dummy string
 const loadedEvents = reactive([]);
 // reminder: use loadedData.value to access the value inside script setup
 // in the template, loadedData is accessible or unwrapped directly: {{loadedData}}
 
-// Define an async component for Vue-cal
-//const AsyncVueCal = defineAsyncComponent(() => import('./VueCal.vue'))
 console.log("code from App.vue");
 
-function loadDataAndPopulateEvents() {
-    fetchDataFromDB()
+var userInput = "";
+window.collectionName = "";
+window.siteInfoData = [];
+
+function populateEvents(){
+    fetchDataFromDB(collectionName)
         .then(dataObject => {
           console.log("Fetched data 'dataObject' is: ", dataObject);
             const processedData = processLoadedData(dataObject.data);
             console.log("processed data array is ",processedData);
             loadedEvents.push(...processedData);
             console.log("loadedEvents array is ",loadedEvents);
+
+            //The function call to change eventcolor needs to alter the reactive variable: loadedEvents
+            const categorizedDataObjects = categorizeData(processedData)
+            console.log(categorizedDataObjects);
+            
         })
         .catch(error => console.error("Failed to load data:", error));
+    }//end of populateEvents function
+
+
+// Function to handle user input submission
+  function submitUserInput() {
+    
+        userInput = document.getElementById('userInput').value;
+      
+        //assign collectionName the value of userInput to save the collection name
+        collectionName = userInput;
+        window.collectionName = collectionName;
+
+        //test if collection name is being saved
+      // console.log('Collection Name:', collectionName);
+
+          // Call the function to load data and populate events with the user input collection name
+          populateEvents(collectionName);
+
+        // Optionally, clear the user input field after submission
+        document.getElementById('userInput').value = '';
+        
+
+    return collectionName;
+
+  }//end of submitUserInput function
+
+function loadData() {
+
+    let collectionName = ""
+    //add event listeners
+    console.log("code from loadData function");
+
+    // Find the submit button element
+    const submitButton = document.querySelector('#submit');
+
+    // Wait for the DOM content to be fully loaded to attach handlers for onclick submit event
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOM content loaded");
+      // Find the submit button element
+      const submitButton = document.querySelector('#submit');
+      // Add a click event listener to the submit button
+      submitButton.addEventListener('click', function(event) {
+          // Prevent the default form submission behavior
+          event.preventDefault();
+          // Get the value of the user input field
+          collectionName = submitUserInput()
+          console.log("the collection name is ",collectionName);
+      });
+    });
+
+    // Add event listener to the user input field to submit on Enter key press
+    const userInputField = document.getElementById('userInput');
+    userInputField.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') { // Check if the Enter key is pressed
+          collectionName = submitUserInput(); // Call the submitUserInput function
+        }
+    });
+
+    
 }
 
-onMounted(()=>{loadDataAndPopulateEvents()});
-
-
-// test_usersDB database secret key: fnAFLgiyHqAARM3hOMlaMuvqhwwlaMIOVcKU66Os
-// try{
-//     var faunaClient = new faunadb.Client({
-//         secret: "fnAFLgiyHqAARM3hOMlaMuvqhwwlaMIOVcKU66Os", // need safer way to handle this
-//     }); 
-      
-//     console.log("connected to database server successfully");
-//     var q = faunadb.query  
-
-
-// }catch(e){
-//     console.log("could not connect to database!:", e)
-// }
-
-//access collection in database
-
-var refID = ref(0);
-//var refID = 0;
-//todo: make siteInfo accessible outside of the then block - 
-//by using ref() and async, i think?
-//or by using return statement in then block
-//async function starts here
-
-//load data from database
-//   const loadData = async () => {
-//   try{
-
-//     //check which collection to query based on the current user
-//     const queriedData = await faunaClient.query(q.Map(q.Paginate(q.Documents(q.Collection('pilot0'))), q.Lambda(x => q.Get(x)) ))
-//                     .then((ret) => {
-//                         //allDocuments = ret;
-//                         refID=ret.data[0].ref.id;
-//                         console.log("First data item in the array <data> in the returned object <ret> from the specific collection <pilot>", ret.data[0].data.siteInfo);
-//                         console.log("returned document ID is ",ret.data[0].ref.id, "and the refID declared outside, and defined inside the scope is ", refID);
-//                         console.log("length of returned document is ",ret.data.length);
-//                         return ret;
-//                       })
-//                       .catch((err) => {
-//                         console.log("error in querying collection from database", err);
-//                         });
-// //await ends here
-// console.log("length of queriedData is ",queriedData.data.length);
-//                         return queriedData; 
-// //try ends here
-//   }catch(e){console.log("could not get collection from database!:", e)}
-   
-// //refID=returnedData.data[0].ref.id;
-// }//end of async loadData function
-
-//call loadData function when component is mounted + todo: and again when data is updated
-//when is onMounted called?
-
-// onMounted(()=>{
-//    console.log("====> Loaded data from loadData() async function being onMounted is: ",
-//    loadData().then((dataObject)=>{    
-//     loadedData.value = dataObject.data[0].data.siteInfo;
-//     console.log("Accessing data from OnMounted", loadedData.value);
-//     const dataArray = dataObject.data;
-// //handle the data tranformations here
-
-// //loop through each source object in the array and convert it into event object
-// //looping begins here
-//     for(const dataItem of dataArray){
-
-//       const dateAdded = new Date(dataItem.data.siteInfo.dateAdded)
-
-//       //calculate default endtime - 1hr (60*60*1000 milliseconds) from start time
-//       const end = new Date(dateAdded.getTime() + 60*60*1000);
-
-//       //define event object
-//       const eventItem = {
-//         start: new Date(dataItem.data.siteInfo.dateAdded),
-//         end: new Date(dateAdded.getTime() + 60*60*1000),
-//         title: dataItem.data.siteInfo.title,
-//         content: dataItem.data.siteInfo.url
-//       }
-//       loadedEvents.push(eventItem);
-      
-//     }// end of for loop for each dataItem in dataArray
-//     console.log("loadedEvents array is ",loadedEvents);
+onMounted(()=>{
   
-//   }));
-// })
+  loadData()
+  
 
-//note1: the first console.log is printed before the promise is resolved
-//note2: the inner console.log prints again, when promise does resolve and data is accessible
+});
 
 const events = loadedEvents;
 
-
-// const events = ref([
-// {
-//     start: '2018-11-19 10:30',
-//     end: '2018-11-19 11:30',
-//     title: 'Understanding the architecture',
-//     test: 'test',
-//     deletable: false, // optional - force undeletable when events are editable.
-//     resizable: false // optional - force unresizable when events are editable.
-//   },
-//   {
-//     start: '2018-11-19 18:30',
-//     end: '2018-11-19 19:15',
-//     title: 'Configurations',
-//   },
-//   {
-//     start: '2018-11-20 18:30',
-//     end: '2018-11-20 20:30',
-//     title: 'Testing datasets',
-//   },
-//   {
-//     start: new Date('2018-11-21 11:05'),
-//     end: '2018-11-21 13:00',
-//     title: 'Automatically generating test cases',
-//     content: [],
-//   },
-//   {
-//     start: '2018-11-21 19:30',
-//     end: '2018-11-21 23:00',
-//     title: 'Handling errors with Python',
-//   },
-
-// ]);
-
-
-//delete selected document from database
-// let deleteDocument = faunaClient.query(
-//     q.Delete(q.Ref(q.Collection('pilot0'), '293137999999999999'))
-//   )
-//   .then((ret) => {
-//     console.log("deleted document from database", ret);
-//     return ret;
-//    })
-//    .catch((err) => {
-//     console.log("error in deleting document from database", err);
-//     });
-
-//create new document in database
-// let createDocument = faunaClient.query(
-//     q.Create(q.Collection('pilot0'), { data: { siteInfo: "test site info", siteURL: "test site url", siteTitle: "test site title", siteDescription: "test site description", siteTags: "test site tags", siteNotes: "test site notes" } }))
-//        .then((ret) => {
-//           console.log("created document in database", ret);
-//           return ret;
-//          })
-//          .catch((err) => {
-//           console.log("error in creating document in database", err);
-//           });
-
-//update document in database
-// let updateDocument = faunaClient.query(
-//     q.Update(q.Ref(q.Collection('pilot0'), '293137999999999999'), { data: { siteInfo: "updated site info", siteURL: "updated site url", siteTitle: "updated site title", siteDescription: "updated site description", siteTags: "updated site tags", siteNotes: "updated site notes" } }))
-//        .then((ret) => {
-//           console.log("updated document in database", ret);
-//           return ret;
-//          })
-//          .catch((err) => {
-//           console.log("error in updating document in database", err);
-//           });
 
 </script>
 
@@ -203,12 +119,11 @@ const events = loadedEvents;
       
     <!-- <div> {{ loadedEvents }} </div> -->
     <vue-cal class="vuecal--blue-theme"
-      selected-date= "2024-04-01"
+      selected-date= "2024-04-23"
       :time="true"
       :time-from="4 * 60"
       :events="events"
       editable-events="editable-events">
-      <template #title="{ title }"> {{ title }} </template>
       </vue-cal>
 
    </main>
@@ -219,8 +134,14 @@ const events = loadedEvents;
 
 .vuecal__now-line {color: #06c;}
 
+.vuecal__event.articles {background-color: #f2c6de}
+.vuecal__event.lectures_and_demos {background-color: #dbcdf0}
+.vuecal__event.step_by_step_tutorials {background-color: #9dc8eb}
+.vuecal__event.discussion_forum_helpseeking {background-color: #c9e4de}
+.vuecal__event.ai_help {background-color: #faedcb}
+
 .vuecal__event {
-  background-color: rgba(128, 207, 233, 0.5);
+  background-color: #D3D3D3;
   box-sizing: border-box;
   padding: 5px;
 
