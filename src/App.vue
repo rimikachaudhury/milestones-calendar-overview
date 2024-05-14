@@ -119,7 +119,7 @@ const events = loadedEvents;
       
     <!-- <div> {{ loadedEvents }} </div> -->
     <vue-cal class="vuecal--blue-theme"
-      selected-date= "2024-04-23"
+      selected-date= "2024-05-09"
       :time="true"
       :time-from="4 * 60"
       :events="events"
@@ -134,11 +134,13 @@ const events = loadedEvents;
 
 .vuecal__now-line {color: #06c;}
 
-.vuecal__event.articles {background-color: #f2c6de}
-.vuecal__event.lectures_and_demos {background-color: #dbcdf0}
-.vuecal__event.step_by_step_tutorials {background-color: #9dc8eb}
-.vuecal__event.discussion_forum_helpseeking {background-color: #c9e4de}
-.vuecal__event.ai_help {background-color: #faedcb}
+.vuecal__event.articles {background-color: #ecc5b7}
+.vuecal__event.lectures_and_demos {background-color: #d7947d}
+.vuecal__event.step_by_step_tutorials {background-color: #b97763}
+.vuecal__event.discussion_forum_helpseeking {background-color: #7eaba6}
+.vuecal__event.ai_help {background-color: #5abba7}
+.vuecal__event.my_work {background-color: #6ad6e7}
+
 
 .vuecal__event {
   background-color: #D3D3D3;
