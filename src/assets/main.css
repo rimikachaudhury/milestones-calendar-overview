@@ -1,5 +1,28 @@
 @import './base.css';
 
+.jumbotron {
+  padding: 2rem 1rem;
+}
+
+.jumbotron .col-8 {
+  text-align: center;
+}
+.jumbotron .col-8 h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+.jumbotron .col-8 h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+#categoriesContainer{
+  padding-top: 5em;
+  justify-content: center;
+}
+
+
+
 #app {
   max-width: 1280px;
   margin: 0 auto;

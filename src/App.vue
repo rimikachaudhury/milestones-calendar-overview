@@ -118,14 +118,14 @@ const events = loadedEvents;
     <!-- wrapping one child node in suspense component -->
       
     <!-- <div> {{ loadedEvents }} </div> -->
-    <vue-cal class="vuecal--blue-theme"
+    <vue-cal class="vuecal"
       selected-date= "2024-05-09"
       :time="true"
+      :timeCellHeight="120"
       :time-from="4 * 60"
       :events="events"
       editable-events="editable-events">
-      </vue-cal>
-
+    </vue-cal>
    </main>
 </template>
 
