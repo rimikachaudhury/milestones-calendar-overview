@@ -9,7 +9,7 @@ export async function fetchDataFromDB(collectionName) {
         console.log("App Vue: Querying collection :",collectionName)
         return await faunaClient.query(
             q.Map(
-                q.Paginate(q.Documents(q.Collection('pilot1'))),
+                q.Paginate(q.Documents(q.Collection(collectionName))),
                 q.Lambda(x => q.Get(x))
             )
         );

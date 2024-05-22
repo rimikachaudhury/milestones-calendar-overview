@@ -119,7 +119,7 @@ const events = loadedEvents;
       
     <!-- <div> {{ loadedEvents }} </div> -->
     <vue-cal class="vuecal"
-      selected-date= "2024-05-09"
+      selected-date= "2024-05-20"
       :time="true"
       :timeCellHeight="120"
       :time-from="4 * 60"
