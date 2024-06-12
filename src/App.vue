@@ -12,6 +12,7 @@ import {categorizeData} from './categorizeData.js';
 
 const loadedData = ref(["dummy data"]);//iniliaze as an array with dummy string
 const loadedEvents = reactive([]);
+
 // reminder: use loadedData.value to access the value inside script setup
 // in the template, loadedData is accessible or unwrapped directly: {{loadedData}}
 
@@ -106,6 +107,18 @@ onMounted(()=>{
 
 const events = loadedEvents;
 
+//event handler for card dialog - not working 11June2024
+function onEventClick(event) {
+    selectedEvent.title = event.title;
+    selectedEvent.start = event.start;
+    selectedEvent.end = event.end;
+    selectedEvent.contentFull = event.content;
+    selectedEvent.url = event.url;
+    selectedEvent.categoryName = event.categoryName;
+    selectedEvent.icon = 'info'; // Replace with actual icon logic if needed
+    showDialog.value = true;
+}
+
 
 </script>
 
@@ -119,13 +132,31 @@ const events = loadedEvents;
       
     <!-- <div> {{ loadedEvents }} </div> -->
     <vue-cal class="vuecal"
-      selected-date= "2024-05-20"
+      :selected-date= "selectedDate"
       :time="true"
       :timeCellHeight="120"
       :time-from="4 * 60"
       :events="events"
-      editable-events="editable-events">
+      editable-events="editable-events"
+      @event-clicked="onEventClick">
     </vue-cal>
+
+    <!-- <v-dialog v-model="showDialog">
+      <v-card>
+        <v-card-title>
+          <span>{{ selectedEvent.title }}</span>
+          <v-spacer/>
+        </v-card-title>
+        <v-card-text>
+          <strong>Event details:</strong>
+          <ul>
+            <li>Category: {{ selectedEvent.categoryName }}</li>
+          </ul>
+        </v-card-text>
+      </v-card>
+    </v-dialog> -->
+
+
    </main>
 </template>
 

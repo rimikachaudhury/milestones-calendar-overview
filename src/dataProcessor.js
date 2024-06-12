@@ -20,6 +20,8 @@ export function processLoadedData(dataArray) {
             end: endTime,
             title: dataItem.data.siteInfo.siteName,
             content: dataItem.data.siteInfo.qtags,
+            //content: '<i class="icon material-icons">local_hospital</i>',
+            //content: `<i class="icon material-icons"></i> ${dataItem.data.siteInfo.qtags}`,
             url: dataItem.data.siteInfo.url,
             categoryName: dataItem.data.siteInfo.categoryName,
         };

@@ -2,13 +2,23 @@
 export function categorizeData(dataArray) {
 
     console.log("the input dataArray to categorizeData is:",dataArray)
+        // const categories = {
+        //     'articles': ['wikipedia'],
+        //     'lectures_and_demos': ['your-lecture-url-here'],
+        //     'step_by_step_tutorials': ['your-tutorial-url-here'],
+        //     'discussion_forum_helpseeking': ['stackOverflow'],
+        //     'ai_help': ['chat.openai.com'],
+        //     'uncategorized': []
+        // };
+
         const categories = {
-            'articles': ['wikipedia'],
-            'lectures_and_demos': ['your-lecture-url-here'],
-            'step_by_step_tutorials': ['your-tutorial-url-here'],
-            'discussion_forum_helpseeking': ['stackOverflow'],
+            'articles': ['wikipedia','medium','towardsdatascience','towardsdatascience','kdnuggets'],
+            'lectures_and_demos': ['analyticsvidhya','coursera','udemy'],
+            'step_by_step_tutorials': ['step'],
+            'discussion_forum_helpseeking': ['stackoverflow'],
             'ai_help': ['chat.openai.com'],
-            'uncategorized': []
+            'my_work': ['https://docs.google.com/document'],
+            'uncategorized': [] // Default column for uncategorized data
         };
     
         const categoryData = {};
