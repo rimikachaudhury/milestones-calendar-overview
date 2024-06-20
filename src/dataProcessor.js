@@ -4,7 +4,10 @@ export function processLoadedData(dataArray) {
     const loadedEvents = [];
     for (const dataItem of dataArray) {
         console.log("Processing dataItem:", dataItem);
-       if (dataItem.data.siteInfo.isExactBookmark === true || dataItem.data.siteInfo.qtags!="no-qtag-yet") { // Check if isExactBookmark flag is true
+        // Check if isExactBookmark flag is true and custom tags are present
+       if (dataItem.data.siteInfo.isExactBookmark === true || 
+        (typeof dataItem.data.siteInfo.qtags === 'string' && dataItem.data.siteInfo.qtags !== 'no-qtag-yet' && dataItem.data.siteInfo.qtags !== 'no-qtags-yet') ||
+        (Array.isArray(dataItem.data.siteInfo.qtags) && dataItem.data.siteInfo.qtags.length === 1 && dataItem.data.siteInfo.qtags[0] !== 'no-qtag-yet' &&  dataItem.data.siteInfo.qtags[0] !== 'no-qtags-yet')) { 
         const dateAdded = new Date(dataItem.data.siteInfo.accessStartTime);
         let defaultEndTime = new Date(dateAdded.getTime() + 60 * 60 * 1000);
         let endTime;

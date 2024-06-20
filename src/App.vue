@@ -138,6 +138,7 @@ function onEventClick(event) {
       :time-from="4 * 60"
       :events="events"
       editable-events="editable-events"
+      :disable-views="['years', 'year', 'month']"
       @event-clicked="onEventClick">
     </vue-cal>
 
