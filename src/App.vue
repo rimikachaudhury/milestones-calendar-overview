@@ -39,6 +39,8 @@ function populateEvents(){
         .catch(error => console.error("Failed to load data:", error));
     }//end of populateEvents function
 
+    //insert displayLastRefreshed
+
 
 // Function to handle user input submission
   function submitUserInput() {
