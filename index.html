@@ -62,6 +62,29 @@
       .then((ret) => console.log(ret))
       .catch((err) => console.error('Error: %s', err))
 
+      function displayLastRefreshed() {
+      const lastRefreshTime = new Date();
+      const lastRefreshedElement = document.getElementById('lastRefreshed');
+      const refreshIcon = document.getElementById('refreshIcon');
+
+      function updateRefreshTime() {
+        const currentTime = new Date();
+        const timeDifference = Math.floor((currentTime - lastRefreshTime) / 60000); // Convert milliseconds to minutes
+        lastRefreshedElement.innerHTML = `Page refreshed ${timeDifference} minute(s) ago
+          <i id="refreshIcon" class="fa-solid fa-sync" style="cursor: pointer; margin-left: 10px;"></i>`;
+        
+        // Add event listener for refresh icon
+        document.getElementById('refreshIcon').addEventListener('click', function() {
+          location.reload();
+        });
+      }
+
+      updateRefreshTime();
+      setInterval(updateRefreshTime, 60000); // Update every minute
+    }
+
+    displayLastRefreshed();
+
     </script>
 
   </body>

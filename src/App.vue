@@ -65,6 +65,8 @@ function populateEvents(){
 
   }//end of submitUserInput function
 
+
+
 function loadData() {
 
     let collectionName = ""
