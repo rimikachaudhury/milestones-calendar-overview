@@ -139,9 +139,11 @@ function onEventClick(event) {
       :selected-date= "selectedDate"
       :time="true"
       :timeCellHeight="120"
-      :time-from="4 * 60"
+      :time-from="4 * 60"      
+      editable-events="{ title: true, drag: true, resize: true, delete: true, create: false }"
       :events="events"
-      editable-events="editable-events"
+      :cell-click-hold="false"
+      :drag-to-create-event="false"
       :disable-views="['years', 'year', 'month']"
       @event-clicked="onEventClick">
     </vue-cal>

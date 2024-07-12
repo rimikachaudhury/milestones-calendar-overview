@@ -27,6 +27,7 @@ export function processLoadedData(dataArray) {
             //content: `<i class="icon material-icons"></i> ${dataItem.data.siteInfo.qtags}`,
             url: dataItem.data.siteInfo.url,
             categoryName: dataItem.data.siteInfo.categoryName,
+            draggable: true,
         };
 
         loadedEvents.push(eventItem);
